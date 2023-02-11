@@ -73,6 +73,8 @@ SELECT [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourl
 FROM CTE
 WHERE RN > 1
 
+--18 dupliacted 
+
 --- remove duplicates
 WITH CTE AS (
     SELECT [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourly], [Typical Hours], [Annual Salary], [Hourly Rate],
