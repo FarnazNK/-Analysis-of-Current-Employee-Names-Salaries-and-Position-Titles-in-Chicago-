@@ -125,7 +125,6 @@ SELECT Department, average_salary
 FROM department_salaries
 ORDER BY average_salary DESC;
 
---This will give you a list of departments and the average salary for each department. 
 
 
 --which job titles in companies have the highest average?
