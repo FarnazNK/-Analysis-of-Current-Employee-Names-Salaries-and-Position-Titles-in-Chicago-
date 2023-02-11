@@ -21,22 +21,6 @@ SELECT TOP (5) [Name]
 
 
 
-
-Mis, stephen j	Firefighter-emt (recruit)	Fire department	F	SALARY	NULL	76122	NULL
-Davis, motisola	Pool motor truck driver	Department of aviation	F	HOURLY	40	NULL	39.25
-Johnson, elisha q	Police communications operator ii	Office of emergency management	F	SALARY	NULL	78384	NULL
-Swann, pamela b	Accounting technician	Department of aviation	F	SALARY	NULL	85344	NULL
-Campbell, marcus m	Parking enforcement aide	Department of finance	F	SALARY	NULL	42312	NULL
-Bonau, theodore	Epidemiologist iii	Department of public health	F	SALARY	NULL	120900	NULL
-Wilbourn, linee s	Pool motor truck driver	Dept streets and sanitation	F	HOURLY	40	NULL	39.25
-Kettler, desiree m	Sponsorship coordinator	Chicago public library	F	SALARY	NULL	99228	NULL
-Gholston, kevin d	Pool motor truck driver	Department of aviation	F	HOURLY	40	NULL	39.25
-
-
-
-
-
-
 --convert the value of the Name, department and  job titles to the propper
   UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 SET [Name] = STUFF(LOWER( [Name]), 1, 1, UPPER(LEFT([Name], 1)))
