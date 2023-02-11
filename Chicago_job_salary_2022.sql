@@ -85,16 +85,10 @@ DELETE FROM CTE
 WHERE RN > 1
 
 
--- Find the count of each unique value in multiple columns of a table
+-- Find the count for each unique combination of the Department, Job Titles, Salary or Hourly, and Full or Part-Time columns
 SELECT [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time], COUNT(*) as count
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time]
-ORDER BY count DESC
-
--- Find the count of each unique value in Job Titles columns of a table
-SELECT [Job Titles], COUNT(*) as count
-FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
-GROUP BY [Job Titles]
 ORDER BY count DESC
 
 
