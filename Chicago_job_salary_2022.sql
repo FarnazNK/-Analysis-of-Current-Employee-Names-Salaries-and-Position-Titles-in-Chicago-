@@ -21,7 +21,7 @@ SELECT TOP (5) [Name]
 
 
 
---convert the value of the Name, department and  job titles to the propper
+--Convert the value of the Name, department and  job titles to the propper
   UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 SET [Name] = STUFF(LOWER( [Name]), 1, 1, UPPER(LEFT([Name], 1)))
 
@@ -31,24 +31,28 @@ SET [Department] = STUFF(LOWER( [Department]), 1, 1, UPPER(LEFT([Department], 1)
 UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 SET [Job Titles] = STUFF(LOWER( [Job Titles]), 1, 1, UPPER(LEFT([Job Titles], 1)))
 
+--Find the number of null values in each column
+  SELECT 
+    SUM(CASE WHEN [Name] IS NULL THEN 1 ELSE 0 END) AS [Name_NULLs],
+    SUM(CASE WHEN [Job Titles] IS NULL THEN 1 ELSE 0 END) AS [Job_Titles_NULLs],
+    SUM(CASE WHEN [Department] IS NULL THEN 1 ELSE 0 END) AS [Department_NULLs],
+    SUM(CASE WHEN [Full or Part-Time] IS NULL THEN 1 ELSE 0 END) AS [Full_or_Part_Time_NULLs],
+    SUM(CASE WHEN [Salary or Hourly] IS NULL THEN 1 ELSE 0 END) AS [Salary_or_Hourly_NULLs],
+    SUM(CASE WHEN [Typical Hours] IS NULL THEN 1 ELSE 0 END) AS [Typical_Hours_NULLs],
+    SUM(CASE WHEN [Annual Salary] IS NULL THEN 1 ELSE 0 END) AS [Annual_Salary_NULLs],
+    SUM(CASE WHEN [Hourly Rate] IS NULL THEN 1 ELSE 0 END) AS [Hourly_Rate_NULLs]
+FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$];
 
---fill the null values in all columns
+
+--Fill the null values in all columns
 SELECT [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourly], [Typical Hours], [Annual Salary], [Hourly Rate]
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 WHERE [Name] IS NULL OR [Job Titles] IS NULL OR [Department] IS NULL OR [Full or Part-Time] IS NULL OR [Salary or Hourly] IS NULL OR [Typical Hours] IS NULL OR [Annual Salary] IS NULL OR [Hourly Rate] IS NULL
 
 
---fill the null values in the [Full or Part-Time] column based on the [Name] column
-UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
-SET [Full or Part-Time] =
-  CASE 
-    WHEN [Name] = 'John Doe' THEN 'Full-Time'
-    WHEN [Name] = 'Jane Doe' THEN 'Part-Time'
-    ELSE [Full or Part-Time]
-  END
-WHERE [Full or Part-Time] IS NULL;
 
--- find the number of unique value in each column as a table
+
+-- Find the number of unique value in each column as a table
 SELECT 
     COUNT(DISTINCT [Name]) AS [Name_Unique],
     COUNT(DISTINCT [Job Titles]) AS [Job Titles_Unique],
@@ -60,7 +64,7 @@ SELECT
     COUNT(DISTINCT [Hourly Rate]) AS [Hourly Rate_Unique]
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 
--- find the duplicate
+-- Find the duplicate
 WITH CTE AS (
     SELECT [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourly], [Typical Hours], [Annual Salary], [Hourly Rate],
            ROW_NUMBER() OVER (PARTITION BY [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourly], [Typical Hours], [Annual Salary], [Hourly Rate] ORDER BY (SELECT NULL)) AS RN
@@ -80,17 +84,23 @@ DELETE FROM CTE
 WHERE RN > 1
 
 
--- find the count of each unique value in multiple columns of a table
+-- Find the count of each unique value in multiple columns of a table
 SELECT [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time], COUNT(*) as count
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time]
 ORDER BY count DESC
 
--- find the count of each unique value in Job Titles columns of a table
+-- Find the count of each unique value in Job Titles columns of a table
 SELECT [Job Titles], COUNT(*) as count
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY [Job Titles]
 ORDER BY count DESC
+
+--What is the number of employees in each Job Titles by the Department and Full or Part-Time?
+SELECT [Job Titles], [Full or Part-Time], [Department], COUNT(*)
+FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
+GROUP BY [Job Titles], [Full or Part-Time], [Department];
+
 
 
 --What is the average salary for each job title?
