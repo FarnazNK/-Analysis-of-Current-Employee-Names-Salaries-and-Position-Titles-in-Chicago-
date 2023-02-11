@@ -85,7 +85,7 @@ DELETE FROM CTE
 WHERE RN > 1
 
 
--- Find the count for each unique combination of the Department, Job Titles, Salary or Hourly, and Full or Part-Time columns
+-- What is the count of records for each unique value of the Job Titles column?
 SELECT [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time], COUNT(*) as count
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time]
