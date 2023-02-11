@@ -20,7 +20,6 @@ SELECT TOP (5) [Name]
 --Swann, pamela b	   |Accounting technician	        |Department of aviation          	|F	              |SALARY             |NULL	    |85344	      |NULL
 
 
-
 --Convert the value of the Name, department and  job titles to the propper
   UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 SET [Name] = STUFF(LOWER( [Name]), 1, 1, UPPER(LEFT([Name], 1)))
@@ -30,6 +29,7 @@ SET [Department] = STUFF(LOWER( [Department]), 1, 1, UPPER(LEFT([Department], 1)
 
 UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 SET [Job Titles] = STUFF(LOWER( [Job Titles]), 1, 1, UPPER(LEFT([Job Titles], 1)))
+
 
 --Find the number of null values in each column
   SELECT 
@@ -50,8 +50,6 @@ FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 WHERE [Name] IS NULL OR [Job Titles] IS NULL OR [Department] IS NULL OR [Full or Part-Time] IS NULL OR [Salary or Hourly] IS NULL OR [Typical Hours] IS NULL OR [Annual Salary] IS NULL OR [Hourly Rate] IS NULL
 
 
-
-
 -- Find the number of unique value in each column as a table
 SELECT 
     COUNT(DISTINCT [Name]) AS [Name_Unique],
@@ -63,6 +61,7 @@ SELECT
     COUNT(DISTINCT [Annual Salary]) AS [Annual Salary_Unique],
     COUNT(DISTINCT [Hourly Rate]) AS [Hourly Rate_Unique]
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
+
 
 -- Find the duplicate
 WITH CTE AS (
@@ -96,11 +95,11 @@ FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY [Job Titles]
 ORDER BY count DESC
 
+
 --What is the number of employees in each Job Titles by the Department and Full or Part-Time?
 SELECT [Job Titles], [Full or Part-Time], [Department], COUNT(*)
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY [Job Titles], [Full or Part-Time], [Department];
-
 
 
 --What is the average salary for each job title?
@@ -116,6 +115,7 @@ SELECT Department, COUNT(*) as number_of_employees
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY Department;
 
+
 --What is the average number of employees in each company?
 WITH company_counts AS (
 SELECT Department, COUNT(*) as number_of_employees
@@ -126,10 +126,12 @@ SELECT Department, AVG(number_of_employees) as average_number_of_employees
 FROM company_counts
 GROUP BY Department;
 
+
 --What is the distribution of job titles in each company?
 SELECT Department, [Job Titles], COUNT(*) as number_of_employees
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY Department, [Job Titles];
+
 
 ---How does the salary vary between different job titles within the same company?
 SELECT Department, [Job Titles], AVG([Annual Salary]) as average_salary
@@ -147,7 +149,6 @@ GROUP BY Department
 SELECT Department, average_salary
 FROM department_salaries
 ORDER BY average_salary DESC;
-
 
 
 --which job titles in companies have the highest average?
