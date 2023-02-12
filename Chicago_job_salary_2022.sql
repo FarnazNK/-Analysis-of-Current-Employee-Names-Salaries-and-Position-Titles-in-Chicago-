@@ -1,4 +1,4 @@
-SELECT TOP (5) [Name]
+SELECT TOP (10) [Name]
       ,[Job Titles]
       ,[Department]
       ,[Full or Part-Time]
@@ -8,19 +8,7 @@ SELECT TOP (5) [Name]
       ,[Hourly Rate]
   FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 
-
--- Results:
-
---Name                |Job Titles                 |Department                             |Full or Part-Time  |Salary or Hourly |Typical Hours|Annual Salary|Hourly Rate
-----------+--------+----------+--------+-------- --+--------+----------+--------+----------+--------+----------+--------+--------+----------+--------+--------+
---Boyking jr, james l|Pool motor truck driver	        |Dept streets and sanitation    	|F                  |HOURLY|	          |40|	    |NULL|	      |39.25
---Mis, stephen j	   |Firefighter-emt (recruit)	        |Fire department	            |F                  |SALARY             |NULL	    |76122	      |NULL
---Davis, motisola	   |Pool motor truck driver	        |Department of aviation       	|F	              |HOURLY             |40	    |NULL	      |39.25
---Johnson, elisha q  |Police communications operator ii |Office of emergency management	|F	              |SALARY             |NULL	    |78384	      |NULL
---Swann, pamela b	   |Accounting technician	        |Department of aviation          	|F	              |SALARY             |NULL	    |85344	      |NULL
-
-
---Convert the value of the Name, department and  job titles to the propper
+--convert the value of the Name, department and  job titles to the propper
   UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 SET [Name] = STUFF(LOWER( [Name]), 1, 1, UPPER(LEFT([Name], 1)))
 
@@ -31,26 +19,23 @@ UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 SET [Job Titles] = STUFF(LOWER( [Job Titles]), 1, 1, UPPER(LEFT([Job Titles], 1)))
 
 
---Find the number of null values in each column
-  SELECT 
-    SUM(CASE WHEN [Name] IS NULL THEN 1 ELSE 0 END) AS [Name_NULLs],
-    SUM(CASE WHEN [Job Titles] IS NULL THEN 1 ELSE 0 END) AS [Job_Titles_NULLs],
-    SUM(CASE WHEN [Department] IS NULL THEN 1 ELSE 0 END) AS [Department_NULLs],
-    SUM(CASE WHEN [Full or Part-Time] IS NULL THEN 1 ELSE 0 END) AS [Full_or_Part_Time_NULLs],
-    SUM(CASE WHEN [Salary or Hourly] IS NULL THEN 1 ELSE 0 END) AS [Salary_or_Hourly_NULLs],
-    SUM(CASE WHEN [Typical Hours] IS NULL THEN 1 ELSE 0 END) AS [Typical_Hours_NULLs],
-    SUM(CASE WHEN [Annual Salary] IS NULL THEN 1 ELSE 0 END) AS [Annual_Salary_NULLs],
-    SUM(CASE WHEN [Hourly Rate] IS NULL THEN 1 ELSE 0 END) AS [Hourly_Rate_NULLs]
-FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$];
-
-
---Fill the null values in all columns
+--fill the null values in all columns
 SELECT [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourly], [Typical Hours], [Annual Salary], [Hourly Rate]
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 WHERE [Name] IS NULL OR [Job Titles] IS NULL OR [Department] IS NULL OR [Full or Part-Time] IS NULL OR [Salary or Hourly] IS NULL OR [Typical Hours] IS NULL OR [Annual Salary] IS NULL OR [Hourly Rate] IS NULL
 
 
--- Find the number of unique value in each column as a table
+--fill the null values in the [Full or Part-Time] column based on the [Name] column
+UPDATE [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
+SET [Full or Part-Time] =
+  CASE 
+    WHEN [Name] = 'John Doe' THEN 'Full-Time'
+    WHEN [Name] = 'Jane Doe' THEN 'Part-Time'
+    ELSE [Full or Part-Time]
+  END
+WHERE [Full or Part-Time] IS NULL;
+
+-- find the number of unique value in each column as a table?
 SELECT 
     COUNT(DISTINCT [Name]) AS [Name_Unique],
     COUNT(DISTINCT [Job Titles]) AS [Job Titles_Unique],
@@ -63,7 +48,7 @@ SELECT
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 
 
--- Find the duplicate
+-- find the duplicate
 WITH CTE AS (
     SELECT [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourly], [Typical Hours], [Annual Salary], [Hourly Rate],
            ROW_NUMBER() OVER (PARTITION BY [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourly], [Typical Hours], [Annual Salary], [Hourly Rate] ORDER BY (SELECT NULL)) AS RN
@@ -73,7 +58,6 @@ SELECT [Name], [Job Titles], [Department], [Full or Part-Time], [Salary or Hourl
 FROM CTE
 WHERE RN > 1
 
---18 dupliacted 
 
 --- remove duplicates
 WITH CTE AS (
@@ -85,17 +69,18 @@ DELETE FROM CTE
 WHERE RN > 1
 
 
--- What is the count of records for each unique value of the Job Titles column?
+-- find the count of each unique value in multiple columns of a table
 SELECT [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time], COUNT(*) as count
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
 GROUP BY [Department], [Job Titles], [Salary or Hourly], [Full or Part-Time]
 ORDER BY count DESC
 
 
---What is the number of employees in each Job Titles by the Department and Full or Part-Time?
-SELECT [Job Titles], [Full or Part-Time], [Department], COUNT(*)
+-- find the count of each unique value in Job Titles columns of a table
+SELECT [Job Titles], COUNT(*) as count
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
-GROUP BY [Job Titles], [Full or Part-Time], [Department];
+GROUP BY [Job Titles]
+ORDER BY count DESC
 
 
 --What is the average salary for each job title?
@@ -103,23 +88,13 @@ SELECT
   [Job Titles], 
   AVG([Annual Salary]) AS avg_salary
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
-GROUP BY [Job Titles];
+GROUP BY [Job Titles]
+ORDER BY avg_salary DESC;
 
 
 ---How many employees are there in each company?
 SELECT Department, COUNT(*) as number_of_employees
 FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
-GROUP BY Department;
-
-
---What is the average number of employees in each company?
-WITH company_counts AS (
-SELECT Department, COUNT(*) as number_of_employees
-FROM [chicago_employer].[dbo].[Current_Employee_Names__Salarie$]
-GROUP BY Department
-)
-SELECT Department, AVG(number_of_employees) as average_number_of_employees
-FROM company_counts
 GROUP BY Department;
 
 
@@ -146,6 +121,8 @@ SELECT Department, average_salary
 FROM department_salaries
 ORDER BY average_salary DESC;
 
+--This code gave a list of departments and the average salary for each department. 
+
 
 --which job titles in companies have the highest average?
 WITH department_salaries AS (
@@ -171,5 +148,3 @@ GROUP BY [Full or Part-Time]
 SELECT [Full or Part-Time], (average_salary / (SELECT SUM(average_salary) FROM full_part_salaries)) * 100 AS percentage_of_total
 FROM full_part_salaries
 ORDER BY average_salary DESC;
-
-
